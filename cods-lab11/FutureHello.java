@@ -32,7 +32,7 @@ class MyCallable implements Callable<Long> {
 
 //classe do método main
 public class FutureHello  {
-  private static final int N = 3;
+  private static final int N = 5;
   private static final int NTHREADS = 10;
 
   public static void main(String[] args) {
@@ -42,9 +42,9 @@ public class FutureHello  {
     List<Future<Long>> list = new ArrayList<Future<Long>>();
 
     for (int i = 0; i < N; i++) {
-      Callable<Long> worker = new MyCallable();
-      Future<Long> submit = executor.submit(worker);
-      list.add(submit);
+      Callable<Long> worker = new MyCallable(); // Instancia os objetos que executam o processamento
+      Future<Long> submit = executor.submit(worker); // Executa o processamento via pool de threads
+      list.add(submit); // Coloca o ticket para o resultado na lista
     }
 
     System.out.println(list.size());

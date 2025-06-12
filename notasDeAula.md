@@ -31,3 +31,19 @@ java MyPool
 
 - O `extends Thread` nos obriga a implementar o `run`.
 
+# FuturePool
+
+O Future abstrai o `join` no momento do retorno da thread.
+
+Eu sei que vou precisar de um resultado lá na frente, que pode ser calculado em outro fluxo de execução.
+O Futuro nos dá um objeto que permite recuperar esse resultado e espera se necessário.
+
+É como se fosse um ticket, em que o método `get()` permite pegar o resultado.
+Note que esse método é bloqueante, então se o resultado não estiver pronto, ele espera.
+
+O `implements Callable<tipoDoRetorno>` é primo do `Runnable`, que permite haver retorno!
+Nele, é preciso implementar `call()`.
+O retorno é normal, via `return`.
+
+
+

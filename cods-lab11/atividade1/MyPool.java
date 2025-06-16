@@ -4,6 +4,8 @@
 /* Codigo: Criando um pool de threads em Java */
 
 import java.util.LinkedList;
+import java.util.Random;
+
 
 //-------------------------------------------------------------------------------
 //!!! Documentar essa classe !!!
@@ -12,7 +14,7 @@ import java.util.LinkedList;
  * @brief É a classe que implementa o Pull de Threads.
  */
 class FilaTarefas {
-	private final int nThreads;
+	private final int nThreads;               // Número de Threads
 	private final MyPoolThreads[] threads;    // Vetor de threads
 	private final LinkedList<Runnable> queue; // Essa é a lista de tarefas
 	private boolean shutdown;                 // Se é para pegar a próxima tarefa
@@ -92,8 +94,108 @@ class Hello implements Runnable {
 }
 
 class Primo implements Runnable {
-	//...completar implementacao, recebe um numero inteiro positivo e imprime se esse numero eh primo ou nao
-	public void run() {}
+  private long p;        // Número a ser testado como primo
+  private int numIter;   // Número de iterações para o teste
+  private Random rand = new Random(); // Objeto randômico
+
+  /**
+   * Construtor.
+   */
+  public Primo(long p) {
+    this.p = p;
+    this.numIter = 10; // Justificado pelo Teo de Rabin (em testeDeMillerRabin)
+  }
+
+  /**
+   * Potência com Square & Multiply.
+   *
+   * @return forma reduzida de a^b (mod n)
+   */
+  public static long powMod(long a, long b, long n) {
+    long res = 1;
+
+    a = a % n;
+    while (b > 0) {
+      if (b % 2 == 1) {
+        res = (res * a) % n;
+      }
+      b = b >> 1;
+      a = (a * a) % n;
+    }
+    return res;
+  }
+
+  /**
+   * Roda o teste de Miller em  p  na base  b.
+   *
+   * @param b é a base do teste
+   * @return false se p é composto
+   *         true  se teste inconclusivo
+   */
+  private boolean testeDeMiller(long b) {
+    // Calcula q_k tq p-1 = 2^k * q, com q ímpar
+    long q = this.p - 1;
+    long k = 0;
+    while (q % 2 == 0) {
+      q /= 2;
+      k++;
+    }
+
+    // Realiza o chute
+    long chute = this.powMod(b, q, this.p);
+    if (chute == 1 || chute == this.p-1) return true; // Passa no teste
+
+    // Executa o teste para as potências de 2
+    for (int i = 1; i < k; i++) {
+      chute = this.powMod(chute, 2, this.p);
+      if (chute == 1)   return false; // Existe ordem no anel do Z_p -> composto
+      if (chute == this.p-1) return true; // Passou no teste
+    } 
+
+    // Se chegou até aqui, definitivamente é composto
+    return false;
+  }
+
+  /**
+   * Testa  p  com Miller-Rabin.
+   *
+   * Teorema de Rabin: Teste de Miller acerta em 3/4 das bases entre 2 e p-2.
+   * Então, com 10 iterações, prob de erro é \frac{1}{4^{10}} > 1e-6.
+   *
+   * @print se p é composto
+   *        se p é primo (provavelmente)
+   */
+  @Override
+	public void run() {
+    long b; // Base para o teste
+
+    // Casos Triviais
+    if (this.p <= 1) {
+      //System.out.println(" > Não Primo: " + this.p);
+      return;
+    }
+    if (this.p <= 3) { // p é 2 ou 3
+      System.out.println(" > Primo:     " + this.p);
+      return;
+    }
+    if (this.p % 2 == 0) {
+      //System.out.println(" > Não Primo: " + this.p);
+      return;
+    }
+
+    // Executa o teste
+    for (int i = 0; i < this.numIter; i++) {
+      // Gera uma base b != 0 em Z_p
+      b = Math.abs(rand.nextLong()) % (this.p - 1) + 1;
+      if (!this.testeDeMiller(b)) {
+      //System.out.println(" > Não Primo: " + this.p);
+        return;
+      }
+    }
+
+    // Se nenhum teste falhou, a prob de não ser composto é \frac{1}{4^numIter}
+    System.out.println(" > Primo:     " + this.p);
+  }
 }
 
 //Classe da aplicação (método main)
@@ -105,12 +207,12 @@ class MyPool {
 		FilaTarefas pool = new FilaTarefas(NTHREADS); 
 
 		//--PASSO 3: dispara a execução dos objetos runnable usando o pool de threads
-		for (int i = 0; i < 25; i++) {
+		for (long i = 0; i < 100000000; i++) {
 			final String m = "Hello da tarefa " + i;
-			Runnable hello = new Hello(m);
-			pool.execute(hello);
-			//Runnable primo = new Primo(i);
-			//pool.execute(primo);
+			//Runnable hello = new Hello(m);
+			//pool.execute(hello);
+			Runnable primo = new Primo(i);
+			pool.execute(primo);
 		}
 
 		//--PASSO 4: esperar pelo termino das threads

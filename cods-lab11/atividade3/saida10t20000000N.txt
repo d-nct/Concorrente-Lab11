@@ -1,0 +1,9 @@
+Iniciando checagem de primos até 20000000 com 10threads via pull de threads...
+Capacidade da lista de futuros: 100
+Tarefas submetidas. Aguardando as 0 últimas terminarem...
+Terminei!
+
+RESUMO
+------
+Verificados inteiros de 1 a 20000000
+Total de primos encontrados: 1270607

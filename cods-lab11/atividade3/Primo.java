@@ -2,7 +2,7 @@ import java.util.concurrent.Callable;
 import java.util.Random;
 
 
-public class Primo implements Callable<Boolean> {
+public class Primo implements Callable<Long> {
   private long p;        // Número a ser testado como primo
   private int numIter;   // Número de iterações para o teste
   private Random rand = new Random(); // Objeto randômico
@@ -79,26 +79,26 @@ public class Primo implements Callable<Boolean> {
    * Teorema de Rabin: Teste de Miller acerta em 3/4 das bases entre 2 e p-2.
    * Então, com 10 iterações, prob de erro é \frac{1}{4^{10}} > 1e-6.
    *
-   * @return false se p é composto
-   *         true  se p é primo (provavelmente)
+   * @return 0 se p é composto
+   *         p se p é primo (provavelmente)
    * @print se p é composto
    *        se p é primo (provavelmente)
    */
-	private Boolean testeDeMillerRabin() {
+	private Long testeDeMillerRabin() {
     long b; // Base para o teste
 
     // Casos Triviais
     if (this.p <= 1) {
       if (this.verb == 2) System.out.println(" > Não Primo: " + this.p);
-      return false;
+      return 0L;
     }
     if (this.p <= 3) { // p é 2 ou 3
       if (this.verb >= 1) System.out.println(" > Primo:     " + this.p);
-      return true;
+      return this.p;
     }
     if (this.p % 2 == 0) {
       if (this.verb == 2) System.out.println(" > Não Primo: " + this.p);
-      return false;
+      return 0L;
     }
 
     // Executa o teste
@@ -107,17 +107,17 @@ public class Primo implements Callable<Boolean> {
       b = Math.abs(rand.nextLong()) % (this.p - 1) + 1;
       if (!this.testeDeMiller(b)) {
         if (this.verb == 2) System.out.println(" > Não Primo: " + this.p);
-        return false;
+        return 0L;
       }
     }
 
     // Se nenhum teste falhou, a prob de não ser composto é \frac{1}{4^numIter}
     if (this.verb >= 1) System.out.println(" > Primo:     " + this.p);
-    return true;
+    return this.p;
   }
 
   // Separei o método apenas para deixar mais didático
-  public Boolean call() throws Exception {
+  public Long call() throws Exception {
     return this.testeDeMillerRabin();
   }
 }

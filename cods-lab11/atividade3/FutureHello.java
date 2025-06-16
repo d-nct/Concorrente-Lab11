@@ -16,7 +16,8 @@ import java.util.Iterator;
 
 //classe do método main
 public class FutureHello  {
-  private static final long N = 1000000000;
+  //private static final long N = 1000000000;
+  private static final long N = 100;
   private static final int NTHREADS = 10;
   private static final int LIST_CAPACITY = NTHREADS * 10;
 
@@ -24,30 +25,35 @@ public class FutureHello  {
     //cria um pool de threads (NTHREADS)
     ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
     //cria uma lista para armazenar referencias de chamadas assincronas
-    List<Future<Boolean>> list = new ArrayList<Future<Boolean>>();
+    List<Future<Long>> list = new ArrayList<Future<Long>>();
+    // Cria o logger dos primos
+    Logger logger = new Logger("primos.txt");
 
     // Variáveis de controle para a lista de tamanho fixo
     long tarefasSubmetidas = 0;
     long primosEncontrados = 0;
+    long p;
 
     System.out.println("Iniciando checagem de primos até " + N + " com " + NTHREADS + "threads via pull de threads...");
 
     while (tarefasSubmetidas < N) {
       // Submete as tarefas até encher a lista
       while (list.size() < LIST_CAPACITY && tarefasSubmetidas < N) {
-        Callable<Boolean> worker = new Primo(tarefasSubmetidas++, 0); // Instancia os objetos que executam o processamento
-        Future<Boolean> submit = executor.submit(worker); // Executa o processamento via pool de threads
+        Callable<Long> worker = new Primo(tarefasSubmetidas++, 0); // Instancia os objetos que executam o processamento
+        Future<Long> submit = executor.submit(worker); // Executa o processamento via pool de threads
         list.add(submit); // Coloca o ticket para o resultado na lista
       }
 
       // Processa a lista
-      Iterator<Future<Boolean>> iterator = list.iterator();
+      Iterator<Future<Long>> iterator = list.iterator();
       while (iterator.hasNext()) {
-        Future<Boolean> future = iterator.next();
+        Future<Long> future = iterator.next();
         if (future.isDone()) { // não bloqueante
           try {
-            if (future.get()) { // dentro do bloco não bloqueante, a func bloqueante não bloqueia
+            p = future.get(); // dentro do bloco não bloqueante, a func bloqueante não bloqueia
+            if (p > 0) { 
               primosEncontrados++;
+              logger.registra(p);
             }
           } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -59,10 +65,12 @@ public class FutureHello  {
 
     // Processa as tarefas sobressalentes
     System.out.println("Tarefas submetidas. Aguardando as " + list.size() + " últimas terminarem...");
-    for (Future<Boolean> future : list) {
+    for (Future<Long> future : list) {
       try {
-        if (future.get()) { // bloqueante
+        p = future.get(); // bloqueante
+        if (p > 0) { 
           primosEncontrados++;
+          logger.registra(p);
         }
       } catch (InterruptedException | ExecutionException e) {
         e.printStackTrace();
@@ -80,5 +88,6 @@ public class FutureHello  {
     System.out.println("Total de primos encontrados: " + primosEncontrados);
 
     executor.shutdown();
+    logger.destruidor();
   }
 }

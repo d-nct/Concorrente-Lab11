@@ -16,8 +16,8 @@ import java.util.Iterator;
 
 //classe do método main
 public class FutureHello  {
-  //private static final long N = 1000000000;
-  private static final long N = 100;
+  private static final long N = 1000000000;
+  //private static final long N = 100;
   private static final int NTHREADS = 10;
   private static final int LIST_CAPACITY = NTHREADS * 10;
 
@@ -27,7 +27,7 @@ public class FutureHello  {
     //cria uma lista para armazenar referencias de chamadas assincronas
     List<Future<Long>> list = new ArrayList<Future<Long>>();
     // Cria o logger dos primos
-    Logger logger = new Logger("primos.txt");
+    Logger logger = new Logger("primos1bi.txt");
 
     // Variáveis de controle para a lista de tamanho fixo
     long tarefasSubmetidas = 0;

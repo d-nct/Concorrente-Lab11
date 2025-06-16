@@ -97,13 +97,15 @@ class Primo implements Runnable {
   private long p;        // Número a ser testado como primo
   private int numIter;   // Número de iterações para o teste
   private Random rand = new Random(); // Objeto randômico
+  private boolean soPrimos; // Booleano para ignorar alguns prints
 
   /**
    * Construtor.
    */
-  public Primo(long p) {
+  public Primo(long p, boolean soPrimos) {
     this.p = p;
     this.numIter = 10; // Justificado pelo Teo de Rabin (em testeDeMillerRabin)
+    this.soPrimos = soPrimos; // Se true, ignora o print quando p é composto
   }
 
   /**
@@ -171,7 +173,7 @@ class Primo implements Runnable {
 
     // Casos Triviais
     if (this.p <= 1) {
-      //System.out.println(" > Não Primo: " + this.p);
+      if (!this.soPrimos) System.out.println(" > Não Primo: " + this.p);
       return;
     }
     if (this.p <= 3) { // p é 2 ou 3
@@ -179,7 +181,7 @@ class Primo implements Runnable {
       return;
     }
     if (this.p % 2 == 0) {
-      //System.out.println(" > Não Primo: " + this.p);
+      if (!this.soPrimos) System.out.println(" > Não Primo: " + this.p);
       return;
     }
 
@@ -188,7 +190,7 @@ class Primo implements Runnable {
       // Gera uma base b != 0 em Z_p
       b = Math.abs(rand.nextLong()) % (this.p - 1) + 1;
       if (!this.testeDeMiller(b)) {
-      //System.out.println(" > Não Primo: " + this.p);
+        if (!this.soPrimos) System.out.println(" > Não Primo: " + this.p);
         return;
       }
     }
@@ -207,11 +209,9 @@ class MyPool {
 		FilaTarefas pool = new FilaTarefas(NTHREADS); 
 
 		//--PASSO 3: dispara a execução dos objetos runnable usando o pool de threads
-		for (long i = 0; i < 100000000; i++) {
+		for (long i = 0; i < 10000; i++) {
 			final String m = "Hello da tarefa " + i;
-			//Runnable hello = new Hello(m);
-			//pool.execute(hello);
-			Runnable primo = new Primo(i);
+			Runnable primo = new Primo(i, false); // Imprime primos e não primos
 			pool.execute(primo);
 		}
 

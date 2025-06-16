@@ -1,0 +1,10 @@
+Enviando 2000000 tarefas para o pool de threads... Sucesso!
+Progresso até 25%... Ok!
+Progresso até 50%... Ok!
+Progresso até 75%... Ok!
+Progresso até 100%... Ok!
+
+RESUMO
+------
+Verificados inteiros de 1 a 2000000
+Total de primos encontrados: 148933

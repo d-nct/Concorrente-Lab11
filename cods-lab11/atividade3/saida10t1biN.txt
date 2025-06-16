@@ -1,0 +1,18 @@
+Iniciando checagem de primos até 1000000000 com 10threads via pull de threads...
+Tarefas submetidas. Aguardando as 0 últimas terminarem...
+Terminei!
+
+RESUMO
+======
+Verificados inteiros de 1 a 1000000000
+Número de Threads: 10
+Capacidade da lista de futuros: 100
+---
+Total de primos encontrados: 50847534
+
+
+
+Saída do comando `time` para esta execução:
+real    5m3.595s
+user    9m55.816s
+sys     3m18.648s
